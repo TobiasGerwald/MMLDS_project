@@ -1,0 +1,13 @@
+name = "MMLDS_project"
+uuid = "b77cf4fa-556c-498d-b38b-5b77f47d1f11"
+authors = ["."]
+version = "0.1.0"
+
+[compat]
+julia = "1.8.2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
