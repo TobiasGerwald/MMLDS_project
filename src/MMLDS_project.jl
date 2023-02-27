@@ -5,6 +5,7 @@ module MMLDS_project
     include("data.jl")
     include("SINDy.jl")
     include("NODE.jl")
+    include("Reservoir_Computing.jl")
 
     export create_data, train_SINDy, hyperOpt
 
