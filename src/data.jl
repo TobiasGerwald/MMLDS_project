@@ -1,6 +1,5 @@
 using OrdinaryDiffEq
-#for loading El Nino Data
-using NetCDF
+
 
 ### Create training Data ###
 
@@ -28,11 +27,7 @@ function create_data(x0 = [1.,1.,1.],dt = 0.01)
 
 end
 
-#Loading and changing El Nino Data
-path_to_data = "sst.mon.mean.nc"
 
-x = ncread(filename, "sst") #sst = Sea Surface Temperature
-x_reduced = x[121:170, 86:95, :] #only concerned with the important region for the El Nino happening
 
 function sum_elements_without_empty_values(y)
     h,w = size(y)
@@ -49,7 +44,7 @@ function sum_elements_without_empty_values(y)
     return summation/counter #using the mean here
 end
 
-function sum_elements_without_empty_values_vec(y) #EMPTY VS ZERO
+function sum_elements_without_empty_values_vec(y) #VECTORIZED VS NORMAL
     bool_matrix = y .< 1.0f20 
     nonzero_elements = sum(bool_matrix)
     y_adjusted = y .* bool_matrix
@@ -57,6 +52,7 @@ function sum_elements_without_empty_values_vec(y) #EMPTY VS ZERO
     return summation/nonzero_elements
 end
 
+#input: 3d array, where h,w,d - h and w define one grid of sst measurements, d - defines the measured months
 function compress_data_matrix(x_data, kernel_size, vectorized = true)
     h,w,d = size(x_data)
     n_h = trunc(Int, h/kernel_size)

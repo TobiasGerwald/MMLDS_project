@@ -1,4 +1,5 @@
 using ReservoirComputing
+using ProgressMeter
 
 ###
 #generate_esn(input_signal, reservoir_size = 1000, spectral_radius = 1.0, sparsity = 0.1, input_scale = 0.1)
@@ -52,7 +53,8 @@ function cross_validate_esn(train_data, val_data, param_grid)
     # We want to predict one step ahead, so the input signal is equal to the target signal from the previous step
     u_train = train_data[:, 1:end-1]
     y_train = train_data[:, 2:end]
-        
+    iterations = length(param_grid)
+    p = Progress(iterations, 1)
     for hyperparams in param_grid        
         # Unpack the hyperparams struct
         (;reservoir_size, spectral_radius, sparsity, input_scale, ridge_param) = hyperparams
@@ -71,9 +73,9 @@ function cross_validate_esn(train_data, val_data, param_grid)
             best_loss = loss
             best_params = hyperparams
             println(best_params)
-            #@printf "Validation loss = %.1e\n" best_loss
-            println("Validation loss = %.1e\n", best_loss)
+            @printf "Validation loss = %.1e\n" best_loss
         end
+        next!(p)
     end
     
     # Retrain the model using the optimal hyperparameters on both the training and validation data
