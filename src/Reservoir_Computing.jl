@@ -1,5 +1,6 @@
 using ReservoirComputing
 using ProgressMeter
+using JLD2
 
 ###
 #generate_esn(input_signal, reservoir_size = 1000, spectral_radius = 1.0, sparsity = 0.1, input_scale = 0.1)
@@ -88,4 +89,26 @@ function cross_validate_esn(train_data, val_data, param_grid)
     Wₒᵤₜ = train_esn!(esn, y, ridge_param)
     
     return esn, Wₒᵤₜ
+end
+
+
+
+
+#saving and loading the ESN Network and the W_out_matrix
+#the saveNameString must include .jld2 - ending
+
+function save_ESN(esn_network, esn_saveNameString::String, W_out, wout_saveNameString::String)
+    jldsave(wout_saveNameString; W_out)
+    jldsave(esn_saveNameString; esn_network)
+end
+
+
+function load_ESN(esn_network_path::String,W_out_path::String)
+    W_out_dict = load(W_out_path)
+    esn_dict = load(esn_network_path)
+
+    esn_load = esn_dict["esn_network"]
+    W_out_load = W_out_dict["W_out"]
+
+    return esn_load, W_out_load
 end
