@@ -1,6 +1,4 @@
 using OrdinaryDiffEq
-
-
 ### Create training Data ###
 
 function lorenz(u, p, t)
@@ -9,14 +7,12 @@ function lorenz(u, p, t)
     dx = σ * (y - x)
     dy = x * (ρ - z) - y
     dz = x * y - β * z
-return [dx, dy, dz]
+    return [dx, dy, dz]
 end
 
-function create_data(x0 = [1.,1.,1.],dt = 0.01)
+function create_data(x0 = [1.,1.,1.],dt = 0.01, tstart = 0., tend = 100.)
 
-    p_lorenz = [10, 28, 8/3] 
-    tstart = 0.
-    tend = 100.
+    p_lorenz = [10, 28, 8/3]
     tspan = (tstart, tend)
     saveat = tstart:dt:tend
 
@@ -26,7 +22,6 @@ function create_data(x0 = [1.,1.,1.],dt = 0.01)
     return sol
 
 end
-
 
 
 function sum_elements_without_empty_values(y)
@@ -53,7 +48,7 @@ function sum_elements_without_empty_values_vec(y) #VECTORIZED VS NORMAL
 end
 
 #input: 3d array, where h,w,d - h and w define one grid of sst measurements, d - defines the measured months
-function compress_data_matrix(x_data, kernel_size, vectorized_computation = true,return_vector = true)
+function compress_data_matrix(x_data, kernel_size, vectorized = true)
     h,w,d = size(x_data)
     n_h = trunc(Int, h/kernel_size)
     n_w = trunc(Int, w/kernel_size)
@@ -64,7 +59,7 @@ function compress_data_matrix(x_data, kernel_size, vectorized_computation = true
             for j in 1:n_w
                 filter_region_w = (1 + (j-1)*kernel_size): (j*kernel_size)
                 y = x_reduced[filter_region_h, filter_region_w, dim]
-                if vectorized_computation
+                if vectorized
                     A[i,j,dim] = sum_elements_without_empty_values_vec(y)
                 else
                     A[i,j,dim] = sum_elements_without_empty_values(y)
@@ -72,10 +67,5 @@ function compress_data_matrix(x_data, kernel_size, vectorized_computation = true
             end
         end
     end
-    if return_vector
-        A_vector = reshape(A, (:,2040))
-        return A_vector
-    else
-        return A
-    end
+    return A
 end
