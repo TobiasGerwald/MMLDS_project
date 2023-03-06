@@ -10,6 +10,9 @@ function train_SINDy(ode_sol, n, threshold=1e-1, λ=1e-1)
      
     optimiser = STLSQ(threshold, λ) #sparsity cut off threshold, Ridge regression parameter
 
-    solve(ddprob, basis, optimiser, options = DataDrivenCommonOptions(digits = 2))
+    ddsol = solve(ddprob, basis, optimiser, options = DataDrivenCommonOptions(digits = 2))
+    println(get_basis(ddsol))
+
+    return ddsol
 
 end
