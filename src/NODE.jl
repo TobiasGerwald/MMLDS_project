@@ -29,15 +29,21 @@ end
 
 null(u,t) = 0
 
-function hyperOpt(ho, ode_sol, x0, dt, N_epochs = 50, rhs_sug = null)#, p_rhs = nothing)
+function hyperOpt(ho, ode_sol, x0; dt = 0.01, N_epochs = 50, rhs_sug = null, mode = "lorenz")#, p_rhs = nothing)
 
-    train, valid = NODEDataloader(ode_sol, 100; dt=dt, valid_set=0.5)
+    if mode == "lorenz"
+        train, valid = NODEDataloader(ode_sol, 100; dt=dt, valid_set=0.5)
+        n_in_out = length(ode_sol.u[1])
+    else
+        train, valid = NODEDataloader(ode_sol, 1:2040, 100, valid_set=0.5)
+        n_in_out = length(ode_sol[:,1])
+    end
 
     best_model = []
     best_neural_ode = []
     best_val_loss = Inf
 
-    n_in_out = length(ode_sol.u[1])
+    
 
 
     for (i,N_weights,N_hidden_layers,activation,τ_max,eta_decrease,reg) in ho #,eta

@@ -58,7 +58,7 @@ function compress_data_matrix(x_data, kernel_size, vectorized_computation = true
             filter_region_h = (1 + (i-1)*kernel_size): (i*kernel_size)
             for j in 1:n_w
                 filter_region_w = (1 + (j-1)*kernel_size): (j*kernel_size)
-                y = x_reduced[filter_region_h, filter_region_w, dim]
+                y = x_data[filter_region_h, filter_region_w, dim]
                 if vectorized_computation
                     A[i,j,dim] = sum_elements_without_empty_values_vec(y)
                 else
