@@ -3,9 +3,10 @@ using DataDrivenDiffEq, DataDrivenSparse
 function train_SINDy(ode_sol, n, threshold=1e-1, λ=1e-1)
     
     ddprob = DataDrivenProblem(ode_sol)
+    dim = length(ode_sol.u[1])
     
-    @variables t x(t) y(t) z(t)  # Symbolic variables
-    u = [x, y, z]
+    @variables t (x(t))[1:dim]#x(t) y(t) z(t)  # Symbolic variables
+    u = x#[x, y, z]
     basis = Basis(polynomial_basis(u, n), u, iv = t)
      
     optimiser = STLSQ(threshold, λ) #sparsity cut off threshold, Ridge regression parameter
