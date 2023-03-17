@@ -27,8 +27,12 @@ end
 function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1, l1_reg = true; basis = nothing, n = nothing)
     
     ddprob = DataDrivenProblem(ode_sol)
-    dim = length(ode_sol.u[1])
-    
+    if ode_sol isa Matrix
+        dim, = size(ode_sol)
+    else
+        dim = length(ode_sol.u[1])
+    end
+
     basis = create_basis(basis, dim, n)
     
     if l1_reg == true
