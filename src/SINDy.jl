@@ -41,5 +41,4 @@ function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1, l1_reg = true; basis = no
     println(get_basis(ddsol))
 
     return ddsol
-
 end
