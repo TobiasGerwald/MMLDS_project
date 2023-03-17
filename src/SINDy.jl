@@ -8,17 +8,34 @@ function create_polynomial_basis(dim, n)
     return basis
 end
 
+function create_basis(basis, dim, n)
+    @variables t (x(t))[1:dim]
 
-function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1; basis = nothing, n = nothing)
+    if basis == "fourier_basis"
+        basis = Basis(fourier_basis(x,n), x, iv=t)
+    elseif basis == "sin_basis"
+        basis = Basis(sin_basis(x,n), x, iv=t)
+    elseif basis == "cos_basis"
+        basis = Basis(cos_basis(x,n), x, iv=t)
+    else
+        basis = Basis(polynomial_basis(x, n), x, iv = t)
+    end
+    return basis
+end
+
+
+function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1, l1_reg = true; basis = nothing, n = nothing)
     
     ddprob = DataDrivenProblem(ode_sol)
     dim = length(ode_sol.u[1])
     
-    if basis === nothing
-        basis = create_polynomial_basis(dim, n)
+    basis = create_basis(basis, dim, n)
+    
+    if l1_reg == true
+        optimiser = ADMM(threshold, λ)
+    else 
+        STLSQ(threshold, λ)
     end
-     
-    optimiser = STLSQ(threshold, λ) #sparsity cut off threshold, Ridge regression parameter
 
     ddsol = solve(ddprob, basis, optimiser, options = DataDrivenCommonOptions(digits = 2))
     println(get_basis(ddsol))
