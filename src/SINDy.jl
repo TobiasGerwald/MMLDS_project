@@ -34,7 +34,7 @@ function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1, l1_reg = true; basis = no
     if l1_reg == true
         optimiser = ADMM(threshold, λ)
     else 
-        STLSQ(threshold, λ)
+        optimiser = STLSQ(threshold, λ)
     end
 
     ddsol = solve(ddprob, basis, optimiser, options = DataDrivenCommonOptions(digits = 2))
