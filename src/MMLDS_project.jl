@@ -9,6 +9,6 @@ module MMLDS_project
     include("Reservoir_Computing.jl")
     include("Lyapunov.jl")
 
-    export create_data, train_SINDy, hyperOpt, generate_esn, train_val_test_split, ESNHyperparams, cross_validate_esn, compress_data_matrix, save_NODE, load_NODE, plot_lyapunov_exp
+    export create_data, train_SINDy, hyperOpt, generate_esn, train_val_test_split, ESNHyperparams, cross_validate_esn, compress_data_matrix, save_NODE, load_NODE, plot_lyapunov_exp, MSE_on_lyapunov_time
 
 end
