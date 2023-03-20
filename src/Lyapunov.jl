@@ -1,9 +1,10 @@
 using OrdinaryDiffEq, DynamicalSystems, CairoMakie
 
 function plot_lyapunov_exp(ode_sol, dims=[3, 4], τs=[1, 15, 17, 19]; Δt = 0.1, k_values = 0:10:100)
-    s = ode_sol[1, :]
+    h(u) = u[1,:]
+    s = h(ode_sol)
 
-# Estimate the optimal embedding
+    # Estimate the optimal embedding
     D, τ, E = optimal_traditional_de(s)
 
     fig = CairoMakie.Figure(figsize = (500, 500))
