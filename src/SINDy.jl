@@ -46,3 +46,15 @@ function train_SINDy(ode_sol, threshold=1e-1, λ=1e-1, l1_reg = true; basis = no
 
     return ddsol
 end
+
+function plot_SINDy_and_ElNino_trajectories(savePath, X_vector, sindy_sol = empty)
+    n, s = size(sindy_sol)
+    for i in 1:n
+        i_data = X_vector[i, 1:100]
+        p = Plots.plot(i_data, idxs=[1], tspan=(0, 100), label="El Nino Data", title="on real world data")
+        p = Plots.plot!(sindy_sol[i,1:100], idxs=[1], tspan=(0, 100), label="SINDy")
+        saveEnding = string(i)
+        savePath_currently = savePath*"trajectory_" * string(saveEnding)*".png" 
+        Plots.savefig(p, savePath_currently)
+    end
+end
