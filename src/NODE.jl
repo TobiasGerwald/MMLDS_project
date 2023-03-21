@@ -1,4 +1,4 @@
-using Printf, Flux, DiffEqSensitivity, Parameters, Hyperopt, StatsBase, NODEData
+using Printf, Flux, DiffEqSensitivity, Parameters, Hyperopt, StatsBase, NODEData, JLD2
 
 
 ### Setup Model, Training and Hyperparameter ###
@@ -35,7 +35,7 @@ function hyperOpt(ho, ode_sol, x0; dt = 0.01, N_epochs = 50, rhs_sug = null, mod
         train, valid = NODEDataloader(ode_sol, 100; dt=dt, valid_set=0.5)
         n_in_out = length(ode_sol.u[1])
     else
-        train, valid = NODEDataloader(ode_sol, 1:2040, 100, valid_set=0.5)
+        train, valid = NODEDataloader(ode_sol, 1:size(ode_sol)[2], 100, valid_set=0.5)
         n_in_out = length(ode_sol[:,1])
     end
 
@@ -73,7 +73,8 @@ function hyperOpt(ho, ode_sol, x0; dt = 0.01, N_epochs = 50, rhs_sug = null, mod
         
 
         println("starting training with N_EPOCHS= ",N_epochs, " - N_weights=",N_weights, " - N_hidden_layers=",N_hidden_layers, " - activation=",activation, " - reg=",reg)
-        for i_τ = 20:10:τ_max
+        τs = vcat(2,5,10:10:τ_max)
+        for i_τ = τs
     
             N_epochs_i = i_τ == 2 ? 2*Int(ceil(N_epochs/τ_max)) : ceil(N_epochs/τ_max) # N_epochs sets the total amount of epochs 
         
@@ -113,3 +114,22 @@ function hyperOpt(ho, ode_sol, x0; dt = 0.01, N_epochs = 50, rhs_sug = null, mod
     return [best_model, best_neural_ode]
 
 end
+
+
+function save_NODE(model, model_saveNameString::String, neural_ode, neural_ode_saveNameString::String)
+    jldsave(model_saveNameString; model)
+    jldsave(neural_ode_saveNameString; neural_ode)
+end
+
+
+function load_NODE(model_path::String,neural_ode_path::String)
+    model_dict = load(model_path)
+    neural_ode_dict = load(neural_ode_path)
+
+    model_load = model_dict["model"]
+    neural_ode_load = neural_ode_dict["neural_ode"]
+
+    return model_load, neural_ode_load
+end
+
+

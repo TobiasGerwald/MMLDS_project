@@ -2,7 +2,7 @@ module MMLDS_project
 
 # Write your package code here.
 #github link for NODEData: https://github.com/maximilian-gelbrecht/NODEData.jl.git
-    using DynamicalSystems, CairoMakie, DifferentialEquations, Plots, OrdinaryDiffEq, NODEData, Printf, Flux, DiffEqSensitivity, Parameters, Hyperopt, StatsBase, ReservoirComputing, DataDrivenDiffEq, DataDrivenSparse, NetCDF, ProgressMeter, JLD2
+    using DynamicalSystems, CairoMakie, DifferentialEquations, Plots, OrdinaryDiffEq, NODEData, Printf, Flux, DiffEqSensitivity, Parameters, Hyperopt, StatsBase, ReservoirComputing, DataDrivenDiffEq, DataDrivenSparse, NetCDF, ProgressMeter, JLD2, Random, Distributions
     include("data.jl")
     include("SINDy.jl")
     include("NODE.jl")
