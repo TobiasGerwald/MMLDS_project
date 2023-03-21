@@ -43,7 +43,7 @@ sol_node = solve(prob, Tsit5(), saveat=tstart:tend)
 teval = 100
 
 
-Plots.plot(sol_node, tspan=(0, teval), label="El Nino", ylims =[20,30])
+Plots.plot(sol_node, tspan=(0, teval), title="NODE El Nino Prediction", ylims =[20,30])
 
 #plot(ode_sol, idxs=[1], tspan=(0, 100), label="El Nino", title="on training data")
 Plots.plot(1:teval, x[1,1:teval], label="El Nino", title="on training data", ylims =[20,30])
@@ -63,7 +63,7 @@ loss(x,y) = sum(abs2, x - y)
 
 λ_max = 0.8
 MSE = 0
-n_restarts = 5
+n_restarts = 20
 for i in 1:n_restarts
     tstart = 0.
     tend = trunc(Int, 1/λ_max)
