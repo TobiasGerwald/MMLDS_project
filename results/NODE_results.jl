@@ -10,7 +10,7 @@ ode_sol = create_data()
 
 ### Get NODE ###
 
-ho = Hyperoptimizer(1,
+ho_rhs = Hyperoptimizer(1,
             N_weights=[32],#, 32, 64, 128],
             N_hidden_layers=1,#:4,
             activation=[leakyrelu],#,swish],
@@ -32,17 +32,38 @@ end
 
 x0=[1, 1, 1]
 dt=0.01
-best_model, best_neural_ode = hyperOpt(ho, ode_sol, x0, dt, 50, rhs_sug)#, p_rhs)
-
+best_model_rhs, best_neural_ode_rhs = hyperOpt(ho_rhs, ode_sol, x0, dt, 50, rhs_sug)#, p_rhs)
 
 ### Evaluation ###
 
 tstart = 0.
 tend = 100.
 tspan = (tstart, tend)
+prob_rhs = ODEProblem(best_neural_ode_rhs, x0, tspan, best_model_rhs.p)
+sol_node_rhs = solve(prob_rhs, Tsit5(), saveat=tstart:0.01:tend, )
+            
+plot(ode_sol_rhs, idxs=[1], tspan=(0, 5), label="lorenz", title="on training data")
+plot!(sol_node_rhs, idxs=[1], tspan=(0, 5), label="node")
+            
+plot(ode_sol_rhs, idxs=[1], tspan=(50, 100), label="lorenz", title="on validation data")
+plot!(sol_node_rhs, idxs=[1], tspan=(50, 100), label="node")
+
+
+
+### without rhs ###
+ho_rhs = Hyperoptimizer(1,
+            N_weights=[64],#, 32, 64, 128],
+            N_hidden_layers=1,#:4,
+            activation=[leakyrelu],#,swish],
+            τ_max=[40],#]:10:70,
+            eta_decrease=[10],#,10,15],
+            reg=[1e-2]
+)
+
+best_model, best_neural_ode = hyperOpt(ho_rhs, ode_sol, x0)
 prob = ODEProblem(best_neural_ode, x0, tspan, best_model.p)
 sol_node = solve(prob, Tsit5(), saveat=tstart:0.01:tend, )
-            
+
 plot(ode_sol, idxs=[1], tspan=(0, 5), label="lorenz", title="on training data")
 plot!(sol_node, idxs=[1], tspan=(0, 5), label="node")
             
