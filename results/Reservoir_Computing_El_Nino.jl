@@ -45,7 +45,7 @@ predictions_loaded = esn_loaded(Generative(100), W_out_loaded)
 first_field_predicted = predictions_loaded[1,1:100]
 
 times = 1:1:100
-label = ["actual" "predicted"]
+label = ["El Nino" "ESN"]
 
 savePath_init = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_4/MMLDS_project/plots/ESN/"
 #savePath_init = string("/home/tom/Documents/University/3M_semester/Project_MMLDS/MMLDS_2/MMLDS_project/Figures/Loaded_El_Nino_Predictions/", saveEnding,".png" )
@@ -69,11 +69,12 @@ plot_lyapunov_exp(predictions_loaded, [20,30], [3, 5, 7, 15], k_values = 0:10:10
 #define maximal lyapunov exponent and calculate MSE
 λ_max = 0.02
 MSE = 0
-n_restarts = 5
+n_restarts = 20
 loss(x,y) = sum(abs2, x - y)
 for i in 1:n_restarts
     tstart = 0.
-    tend = trunc(Int, 1/λ_max)
+    #tend = trunc(Int, 1/λ_max)
+    tend = 10
     tspan = (tstart, tend)
     x0 = X_vector[:,i]
     
@@ -83,3 +84,32 @@ for i in 1:n_restarts
 end
 
 MSE /= n_restarts
+
+
+### Temporal ###
+
+x_temp = x_data[191, 86, :] 
+D, τ, E = optimal_traditional_de(x_temp, τs = 1:200)
+train_data, val_data, test_data = train_val_test_split(Matrix{Float64}(D)', val_seconds = 5, test_seconds = 5)
+
+ 
+#esn_temp, W_out_temp = cross_validate_esn(train_data, val_data, param_grid)
+network_pathString_temp = absolute_path*"esn_network_temp.jld2"
+W_out_pathString_temp = absolute_path*"W_out_matrix_temp.jld2"
+#save_ESN(esn_temp, network_pathString_temp, W_out_temp, W_out_pathString_temp)
+
+#load a saved network
+esn_temp_loaded, W_out_temp_loaded = load_ESN(network_pathString_temp, W_out_pathString_temp)
+
+#load a trained network:
+predictions_temp = esn_temp_loaded(Generative(10000), W_out_temp_loaded)
+
+times = 1:1:100
+label = ["El Nino" "esn_temp "]
+p = Plots.plot(times, [x_temp[1:100], predictions_temp[1,1:100]], label = label, ylabel = "temperature", xlabel = "months")#
+saveEnding = string(1)
+savePath = savePath_init * saveEnding * "_temporal.png" 
+savefig(p, savePath)
+
+
+plot_lyapunov_exp(predictions_temp,[5,10,20], [4,6,12], k_values = 0:10:100)
