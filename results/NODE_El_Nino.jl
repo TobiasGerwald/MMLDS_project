@@ -44,11 +44,13 @@ teval = 100
 
 
 Plots.plot(sol_node, tspan=(0, teval), title="NODE El Nino Prediction", ylims =[20,30])
+png("NODE_El_Nino_all.png")     
 
 #plot(ode_sol, idxs=[1], tspan=(0, 100), label="El Nino", title="on training data")
 Plots.plot(1:teval, x[1,1:teval], label="El Nino", title="on training data", ylims =[20,30])
 Plots.plot!(sol_node, idxs=[1], tspan=(0, teval-1), label="node")
-            
+png("NODE_El_Nino-shortterm.png")     
+
 Plots.plot(1021:2040, x[1, 1021:2040], label="El Nino", title="on validation data")
 Plots.plot!(sol_node, idxs=[1], tspan=(1021, 2040), label="node")
 
@@ -66,7 +68,8 @@ MSE = 0
 n_restarts = 20
 for i in 1:n_restarts
     tstart = 0.
-    tend = trunc(Int, 1/λ_max)
+    #tend = trunc(Int, 1/λ_max)
+    tend = 10
     tspan = (tstart, tend)
     x0 = x[:,i]
 
@@ -86,7 +89,6 @@ MSE /= n_restarts
 
 x_temp = x_data[191, 86, :] 
 D, τ, E = optimal_traditional_de(x_temp, τs = 1:200)
-
 #train_temp, valid_temp = NODEDataloader(Matrix{Float64}(D)', 1:length(D), 100, valid_set=0.5)
 
 D0 = D[1]
@@ -101,12 +103,15 @@ tspan = (tstart, tend)
 prob_temp = ODEProblem(best_temp_neural_ode, Vector{Float64}(D0), tspan, best_temp_model.p)
 sol_node_temp = solve(prob_temp, Tsit5(), saveat=tstart:tend)
 Plots.plot(sol_node_temp, tspan=(0, teval), title="El Nino Temporal Approach", ylims =[25,30])
+png("NODE_El_Nino_delay_all.png")  
 
 Plots.plot(1:teval, x_temp[1:teval], label="El Nino", title="on training data", ylims =[25,30])
-Plots.plot!(sol_node_temp, idxs=[1], tspan=(0, teval), label="node_temp")
+Plots.plot!(sol_node_temp, idxs=[1], tspan=(0, teval-1), label="node_temp")
+png("NODE_El_Nino_delay_shortterm.png")  
 
 Plots.plot(1021:tend, x_temp[1021:end], label="El Nino", title="on valodation data")#, ylims =[25,30])
-Plots.plot!(sol_node_temp, idxs=[1], tspan=(1020., tend), label="node_temp")
+Plots.plot!(sol_node_temp, idxs=[1], tspan=(1021., tend), label="node_temp")
+png("NODE_El_Nino_delay_longterm.png")
 
 #plot_lyapunov_exp(sol_node_temp, 5:7, 7:10, k_values = 0:10:100)
 plot_lyapunov_exp(sol_node_temp, 5:7, 7:10, k_values = 0:10:1000)
@@ -117,7 +122,8 @@ MSE = 0
 n_restarts = 20
 for i in 1:n_restarts
     tstart = 0.
-    tend = trunc(Int, 1/λ_max)
+    #tend = trunc(Int, 1/λ_max)
+    tend = 10
     tspan = (tstart, tend)
     D0 = Vector{Float64}(D[i])
     prob = ODEProblem(best_temp_neural_ode, D0, tspan, best_temp_model.p)
