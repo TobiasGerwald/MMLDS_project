@@ -28,16 +28,12 @@ train_data, val_data, test_data = train_val_test_split(sol, val_seconds = 15, te
 esn, Wₒᵤₜ = cross_validate_esn(train_data, val_data, param_grid)
 
 #plot prediction
-function plot_prediction(esn, Wₒᵤₜ, test_data)
-    steps_to_predict = size(test_data, 2)
-    prediction = esn(Generative(steps_to_predict), Wₒᵤₜ)
-    dt = 0.01
-    label = ["actual" "predicted"]
-    times = dt * collect(0:steps_to_predict)[1:end-1] 
+times = 0:0.01:5
+prediction_longterm = esn(Generative(10001), Wₒᵤₜ)
+label = ["lorenz" "ESN"]
+p1 = plot(times, [sol[1,1:501], prediction_longterm[1,1:501]], label = label, ylabel = "x(t)")
+p2 = plot(times, [sol[1,1:501], prediction_longterm[1,1:501]], label = label, ylabel = "y(t)")
+p3 = plot(times, [sol[1,1:501], prediction_longterm[1,1:501]], label = label, ylabel = "z(t)")
+p4 = plot(p1, p2, p3, layout = (3, 1), size = (800, 600))
+savefig(p4, "long_term_esn_lorenz")
 
-    p1 = plot(times, [test_data[1, :], prediction[1, :]], label = label, ylabel = "x(t)")
-    p2 = plot(times, [test_data[2, :], prediction[2, :]], label = label, ylabel = "y(t)")
-    p3 = plot(times, [test_data[3, :], prediction[3, :]], label = label, ylabel = "z(t)", xlabel = "t")
-    plot(p1, p2, p3, layout = (3, 1), size = (800, 600))
-end
-plot_prediction(esn, Wₒᵤₜ, test_data)

@@ -4,7 +4,7 @@ using MMLDS_project
 using ProgressMeter, DynamicalSystems, ReservoirComputing, Plots, Printf, DifferentialEquations, OrdinaryDiffEq, NetCDF, JLD2
 
 #Loading and changing El Nino Data
-path_to_data = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_3/MMLDS_project/src/sst.mon.mean.nc"
+path_to_data = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_4/MMLDS_project/src/sst.mon.mean.nc"
 
 x_data = ncread(path_to_data, "sst") #sst = Sea Surface Temperature
 x_reduced = x_data[191:240, 86:95, :] #only concerned with the important region for the El Nino happening
@@ -31,7 +31,7 @@ println(length(param_grid), " hyperparameter combinations.")
 #esn, W_out = cross_validate_esn(train_data, val_data, param_grid)
 
 #save network
-absolute_path = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_3/MMLDS_project/results/"
+absolute_path = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_4/MMLDS_project/results/"
 network_pathString = absolute_path*"esn_network.jld2"
 W_out_pathString = absolute_path*"W_out_matrix.jld2"
 #save_ESN(esn, network_pathString, W_out, W_out_pathString)
@@ -47,12 +47,12 @@ first_field_predicted = predictions_loaded[1,1:100]
 times = 1:1:100
 label = ["actual" "predicted"]
 
-savePath_init = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_3/MMLDS_project/plots/ESN/"
+savePath_init = "C:/Users/tomfi/Desktop/Uni/3M_semester/Project_MMLDS/MMLDS_4/MMLDS_project/plots/ESN/"
 #savePath_init = string("/home/tom/Documents/University/3M_semester/Project_MMLDS/MMLDS_2/MMLDS_project/Figures/Loaded_El_Nino_Predictions/", saveEnding,".png" )
 
 for i in 1:20
     i_data = X_vector[i, 1:100]
-    p = Plots.plot(times, [i_data, predictions_loaded[i,1:100]], label = label, ylabel = "temperature")#
+    p = Plots.plot(times, [i_data, predictions_loaded[i,1:100]], label = label, ylabel = "temperature", xlabel = "months")#
     saveEnding = string(i)
     savePath = savePath_init * saveEnding * ".png" 
     savefig(p, savePath)
@@ -64,7 +64,7 @@ h(u) = u[1, :]
 s = h(predictions_loaded)
 D, τ, E = optimal_traditional_de(s)
 
-plot_lyapunov_exp(predictions_loaded, [5, 20,30], [1, 3, 5, 7, 15], k_values = 0:10:500)
+plot_lyapunov_exp(predictions_loaded, [20,30], [3, 5, 7, 15], k_values = 0:10:100)
 
 #define maximal lyapunov exponent and calculate MSE
 λ_max = 0.02
